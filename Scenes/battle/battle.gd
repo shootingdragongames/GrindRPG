@@ -7,6 +7,7 @@ var bandit_hp: int
 var bandit_max_hp: int
 var bandit_def: int = 3
 var player_turn: bool = true
+var is_defending: bool = false
 
 @onready var hp_bar = $UI/UIRoot/PartyPanel/ProgressBar
 @onready var hp_label = $UI/UIRoot/PartyPanel/Label
@@ -20,7 +21,8 @@ func _on_attack_pressed():
 
 func _on_defend_pressed():
     if player_turn:
-        print("Fighter defends! Reduced damage next hit.")
+        is_defending = true
+        print("Fighter defends!")
         enemy_attack()
 func show_damage(amount: int, position: Vector2, color: Color):
     var label = Label.new()
@@ -85,6 +87,13 @@ func enemy_attack():
     var base_damage = max(0, bandit_atk - fighter_data.get_def())
     var variance = randf_range(0.85, 1.15)
     var damage = max(1, int(base_damage * variance))
+    
+    if is_defending:
+        var reduction = randf_range(0.50, 0.75)
+        damage = max(1, int(damage * (1.0 - reduction)))
+        print("Fighter defended! Reduced damage: ", damage)
+        is_defending = false
+    
     fighter_hp -= damage
     print("Bandit attacks! ", damage, " damage. Fighter HP: ", fighter_hp)
     show_damage(damage, $ColorRect.position + Vector2(0, -20), Color.WHITE)
