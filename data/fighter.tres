@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="CharacterData" format=3 uid="uid://ct4hxwuvwtuek"]
+
+[ext_resource type="Script" uid="uid://cy8lvavhcorr2" path="res://scripts/character_data.gd" id="1_uaylq"]
+
+[resource]
+script = ExtResource("1_uaylq")
+character_name = "Fighter"
+resource_pool_name = "Stamina"
+growth_hp = 20
+growth_str = 1
+metadata/_custom_type_script = "uid://cy8lvavhcorr2"
