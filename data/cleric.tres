@@ -4,6 +4,7 @@
 
 [resource]
 script = ExtResource("1_tveew")
+player_color = Color(0.9411765, 0.64705884, 0, 1)
 character_name = "Cleric"
 resource_pool_name = "Mana"
 growth_hp = 20

@@ -4,6 +4,7 @@
 
 [resource]
 script = ExtResource("1_r0oxt")
+player_color = Color(0.16078432, 0.5019608, 0.7254902, 1)
 character_name = "Mage"
 resource_pool_name = "Mana"
 growth_resource = 20

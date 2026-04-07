@@ -1,6 +1,7 @@
 class_name CharacterData
 extends Resource
 
+@export var player_color: Color = Color.WHITE
 @export var character_name: String = ""
 @export var resource_pool_name: String = ""
 

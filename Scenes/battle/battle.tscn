@@ -6,42 +6,7 @@
 script = ExtResource("1_b7c46")
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1068787916]
-
-[node name="ColorRect" type="ColorRect" parent="." unique_id=1202562430]
-offset_left = -32.0
-offset_top = -32.0
-offset_right = 32.0
-offset_bottom = 32.0
-color = Color(1, 0, 0, 1)
-
-[node name="Label" type="Label" parent="ColorRect" unique_id=1114315556]
-layout_mode = 0
-offset_top = 68.0
-offset_right = 55.0
-offset_bottom = 91.0
-text = "Fighter"
-
-[node name="ColorRect2" type="ColorRect" parent="." unique_id=75407042]
-offset_left = 200.0
-offset_top = -32.0
-offset_right = 264.0
-offset_bottom = 32.0
-color = Color(0.19913352, 0.19913352, 0.19913352, 1)
-
-[node name="Label" type="Label" parent="ColorRect2" unique_id=466009562]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 23.0
-text = "Bandit"
-
-[node name="ProgressBar" type="ProgressBar" parent="ColorRect2" unique_id=2049445097]
-layout_mode = 0
-offset_top = -12.0
-offset_right = 64.0
-offset_bottom = 15.0
-max_value = 30.0
-value = 30.0
-show_percentage = false
+anchor_mode = 0
 
 [node name="UI" type="CanvasLayer" parent="." unique_id=1063261024]
 

@@ -4,6 +4,7 @@
 
 [resource]
 script = ExtResource("1_adqp6")
+player_color = Color(0.15294118, 0.68235296, 0.3764706, 1)
 character_name = "Thief"
 resource_pool_name = "Power"
 growth_resource = 10

@@ -4,6 +4,7 @@
 
 [resource]
 script = ExtResource("1_uaylq")
+player_color = Color(0.7529412, 0.22352941, 0.16862746, 1)
 character_name = "Fighter"
 resource_pool_name = "Stamina"
 growth_hp = 20
