@@ -74,34 +74,31 @@ func build_combatants():
             "is_defending": false,
             "grid_pos": grid_pos,
             "rect": rect,
-            "rolled_initiative": 0.0
+            "rolled_initiative": 0.0,
+            "hp_bar": {}
         })
+        var char_hp_bar = create_hp_bar(combatants.back())
+        combatants.back()["hp_bar"] = char_hp_bar
 
     var bandit = EnemyDB.get_enemy("bandit")
     if bandit:
-        var avg_player_atk = get_avg_player_atk()
-        var bandit_hp = bandit.base_hp
         var grid_pos = Vector2(1, 0)
         var rect = create_enemy_rect(bandit, grid_pos)
         combatants.append({
             "name": bandit.enemy_name,
             "type": "enemy",
             "data": bandit,
-            "current_hp": bandit_hp,
-            "max_hp": bandit_hp,
+            "current_hp": bandit.base_hp,
+            "max_hp": bandit.base_hp,
             "is_ko": false,
             "is_defending": false,
             "grid_pos": grid_pos,
             "rect": rect,
-            "rolled_initiative": 0.0
+            "rolled_initiative": 0.0,
+            "hp_bar": {}
         })
-
-func get_avg_player_atk() -> int:
-    var total = 0
-    for c in combatants:
-        if c.type == "player":
-            total += c.data.get_atk()
-    return max(1, total / max(1, combatants.size()))
+        var char_hp_bar = create_hp_bar(combatants.back())
+        combatants.back()["hp_bar"] = char_hp_bar
 
 func create_character_rect(char_data: CharacterData, grid_pos: Vector2) -> ColorRect:
     var rect = ColorRect.new()
@@ -164,11 +161,8 @@ func get_rolled_initiative(combatant: Dictionary) -> float:
     return base + best_roll
 
 func sort_by_initiative():
-    # Pre-roll everyone's initiative first
     for c in combatants:
         c["rolled_initiative"] = get_rolled_initiative(c)
-
-    # Sort using stored values
     combatants.sort_custom(func(a, b):
         if a.rolled_initiative == b.rolled_initiative:
             return a.type == "player"
@@ -179,6 +173,50 @@ func print_turn_order():
     print("Turn order:")
     for c in combatants:
         print("  ", c.name, " - Initiative: ", c.rolled_initiative)
+
+# =====================
+# HP BARS
+# =====================
+
+func create_hp_bar(combatant: Dictionary) -> Dictionary:
+    var char_pos = combatant.rect.position
+
+    var bar_x: float
+    if combatant.type == "player":
+        bar_x = char_pos.x - 24
+    else:
+        bar_x = char_pos.x + SLOT_SIZE.x + 4
+
+    var bg = ColorRect.new()
+    bg.size = Vector2(20, 80)
+    bg.position = Vector2(bar_x, char_pos.y)
+    bg.color = Color(0.15, 0.15, 0.15)
+    add_child(bg)
+
+    var fg = ColorRect.new()
+    fg.size = Vector2(20, 80)
+    fg.position = Vector2(bar_x, char_pos.y)
+    if combatant.type == "player":
+        fg.color = combatant.data.player_color
+    else:
+        fg.color = Color(0.6, 0.1, 0.1)
+    add_child(fg)
+
+    return {"bg": bg, "fg": fg, "max_height": 80.0}
+
+func update_hp_bar(combatant: Dictionary):
+    if not combatant.has("hp_bar") or combatant.hp_bar.is_empty():
+        return
+    var bar = combatant.hp_bar
+    var pct = float(combatant.current_hp) / float(combatant.max_hp)
+    var new_height = bar.max_height * pct
+    bar.fg.size.y = new_height
+    bar.fg.position.y = combatant.rect.position.y + (bar.max_height - new_height)
+    if combatant.type == "player":
+        var full_color = combatant.data.player_color
+        bar.fg.color = full_color.lerp(Color(0.3, 0.0, 0.0), 1.0 - pct)
+    else:
+        bar.fg.color = Color(0.6 * pct, 0.1, 0.1)
 
 # =====================
 # TURN MANAGEMENT
@@ -250,7 +288,7 @@ func player_attack(attacker: Dictionary):
             break
 
     if not target:
-        check_battle_end()
+        await check_battle_end()
         return
 
     var weapon_bonus: int = 10
@@ -271,7 +309,7 @@ func player_attack(attacker: Dictionary):
 
     update_ui(attacker)
 
-    if check_battle_end():
+    if await check_battle_end():
         return
 
     next_turn()
@@ -288,7 +326,7 @@ func enemy_act(enemy: Dictionary):
             break
 
     if not target:
-        check_battle_end()
+        await check_battle_end()
         return
 
     var base_damage = max(0, enemy.data.base_atk - target.data.get_def())
@@ -313,7 +351,7 @@ func enemy_act(enemy: Dictionary):
 
     update_ui(combatants[current_turn_index])
 
-    if check_battle_end():
+    if await check_battle_end():
         return
 
     next_turn()
@@ -328,26 +366,104 @@ func check_battle_end() -> bool:
 
     if not enemies_alive:
         battle_active = false
-        print("=== VICTORY! ===")
         enable_buttons(false)
+        await get_tree().create_timer(0.5).timeout
+        show_victory()
         return true
 
     if not players_alive:
         battle_active = false
-        print("=== DEFEAT ===")
         enable_buttons(false)
+        await get_tree().create_timer(0.5).timeout
+        show_defeat()
         return true
 
     return false
+
+# =====================
+# VICTORY / DEFEAT
+# =====================
+
+func show_victory():
+    var total_xp = 0
+    var total_gold = 0
+    for c in combatants:
+        if c.type == "enemy":
+            total_xp += c.data.base_xp
+            total_gold += c.data.base_gold
+
+    var overlay = ColorRect.new()
+    overlay.color = Color(0, 0, 0, 0.75)
+    overlay.size = Vector2(1152, 648)
+    overlay.position = Vector2(0, 0)
+    add_child(overlay)
+
+    var title = Label.new()
+    title.text = "VICTORY!"
+    title.position = Vector2(450, 150)
+    title.add_theme_font_size_override("font_size", 48)
+    title.add_theme_color_override("font_color", Color.YELLOW)
+    overlay.add_child(title)
+
+    var rewards = Label.new()
+    rewards.text = "XP: " + str(total_xp) + "     Gold: " + str(total_gold)
+    rewards.position = Vector2(430, 230)
+    rewards.add_theme_font_size_override("font_size", 24)
+    rewards.add_theme_color_override("font_color", Color.WHITE)
+    overlay.add_child(rewards)
+
+    var continue_btn = Button.new()
+    continue_btn.text = "Continue"
+    continue_btn.position = Vector2(450, 320)
+    continue_btn.size = Vector2(160, 50)
+    continue_btn.pressed.connect(func():
+        get_tree().change_scene_to_file("res://Scenes/charcter_select.tscn")
+    )
+    overlay.add_child(continue_btn)
+
+func show_defeat():
+    var overlay = ColorRect.new()
+    overlay.color = Color(0, 0, 0, 0.75)
+    overlay.size = Vector2(1152, 648)
+    overlay.position = Vector2(0, 0)
+    add_child(overlay)
+
+    var title = Label.new()
+    title.text = "DEFEATED..."
+    title.position = Vector2(420, 150)
+    title.add_theme_font_size_override("font_size", 48)
+    title.add_theme_color_override("font_color", Color.RED)
+    overlay.add_child(title)
+
+    var retry_btn = Button.new()
+    retry_btn.text = "Retry"
+    retry_btn.position = Vector2(380, 280)
+    retry_btn.size = Vector2(140, 50)
+    retry_btn.pressed.connect(func():
+        get_tree().reload_current_scene()
+    )
+    overlay.add_child(retry_btn)
+
+    var quit_btn = Button.new()
+    quit_btn.text = "Quit"
+    quit_btn.position = Vector2(540, 280)
+    quit_btn.size = Vector2(140, 50)
+    quit_btn.pressed.connect(func():
+        get_tree().change_scene_to_file("res://Scenes/charcter_select.tscn")
+    )
+    overlay.add_child(quit_btn)
 
 # =====================
 # UI
 # =====================
 
 func update_ui(active: Dictionary):
-    hp_bar.max_value = active.max_hp
-    hp_bar.value = active.current_hp
-    hp_label.text = active.name + "  HP: " + str(active.current_hp) + "/" + str(active.max_hp)
+    for c in combatants:
+        update_hp_bar(c)
+    if active.type == "player":
+        hp_bar.max_value = active.max_hp
+        hp_bar.value = active.current_hp
+        hp_label.text = active.name + "  HP: " + str(active.current_hp) + "/" + str(active.max_hp)
 
 func show_damage(amount: int, pos: Vector2, color: Color):
     var label = Label.new()
@@ -362,4 +478,4 @@ func show_damage(amount: int, pos: Vector2, color: Color):
 
 func _process(_delta):
     if Input.is_action_just_pressed("ui_cancel"):
-        get_tree().reload_current_scene()
+        get_tree().change_scene_to_file("res://Scenes/charcter_select.tscn")
