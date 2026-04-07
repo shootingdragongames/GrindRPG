@@ -17,10 +17,15 @@ extends Resource
 @export var growth_hp: int = 0
 @export var growth_resource: int = 0
 @export var growth_str: int = 0
+@export var growth_dex: int = 0
+@export var growth_wis: int = 0
+@export var growth_int: int = 0
+@export var growth_lck: int = 0
+
 # Current level
 @export var level: int = 1
 
-# Allocated points (player distributed)
+# Allocated points
 var alloc_str: int = 0
 var alloc_dex: int = 0
 var alloc_wis: int = 0
@@ -34,16 +39,16 @@ func get_str() -> int:
     return base_str + (growth_str * (level - 1)) + alloc_str
 
 func get_dex() -> int:
-    return base_dex + alloc_dex
+    return base_dex + (growth_dex * (level - 1)) + alloc_dex
 
 func get_wis() -> int:
-    return base_wis + alloc_wis
+    return base_wis + (growth_wis * (level - 1)) + alloc_wis
 
 func get_int() -> int:
-    return base_int + alloc_int
+    return base_int + (growth_int * (level - 1)) + alloc_int
 
 func get_lck() -> int:
-    return base_lck + alloc_lck
+    return base_lck + (growth_lck * (level - 1)) + alloc_lck
 
 func get_max_hp() -> int:
     return base_hp + (growth_hp * (level - 1)) + (alloc_hp * 10)

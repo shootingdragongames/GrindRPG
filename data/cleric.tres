@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="CharacterData" format=3 uid="uid://b2c67w66gxmqf"]
+
+[ext_resource type="Script" uid="uid://cy8lvavhcorr2" path="res://scripts/character_data.gd" id="1_tveew"]
+
+[resource]
+script = ExtResource("1_tveew")
+character_name = "Cleric"
+resource_pool_name = "Mana"
+growth_hp = 20
+growth_resource = 10
+growth_str = 2
+growth_wis = 1
+growth_int = 1
+metadata/_custom_type_script = "uid://cy8lvavhcorr2"

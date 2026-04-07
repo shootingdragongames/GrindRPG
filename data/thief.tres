@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="CharacterData" format=3 uid="uid://6vqgs60xtcuf"]
+
+[ext_resource type="Script" uid="uid://cy8lvavhcorr2" path="res://scripts/character_data.gd" id="1_adqp6"]
+
+[resource]
+script = ExtResource("1_adqp6")
+character_name = "Thief"
+resource_pool_name = "Power"
+growth_resource = 10
+growth_dex = 5
+growth_lck = 1
+metadata/_custom_type_script = "uid://cy8lvavhcorr2"
