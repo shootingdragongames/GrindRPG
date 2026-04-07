@@ -7,10 +7,10 @@ func _ready():
 
 func load_all_characters():
     var char_files = [
-        "res://data/fighter.tres",
-        "res://data/thief.tres",
-        "res://data/mage.tres",
-        "res://data/cleric.tres",
+        "res://data/characters/fighter.tres",
+        "res://data/characters/thief.tres",
+        "res://data/characters/mage.tres",
+        "res://data/characters/cleric.tres",
     ]
     for path in char_files:
         if ResourceLoader.exists(path):

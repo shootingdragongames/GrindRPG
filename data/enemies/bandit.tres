@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="EnemyData" format=3 uid="uid://covfpxdx2bjki"]
+
+[ext_resource type="Script" uid="uid://c0b1rwdngccpl" path="res://scripts/enemy_data.gd" id="1_1fl8c"]
+
+[resource]
+script = ExtResource("1_1fl8c")
+enemy_name = "Bandit"
+monsterpedia_note = "some guys who pillages villages. not worth the ink."
+note_character = "Fighter"
+base_atk = 12
+metadata/_custom_type_script = "uid://c0b1rwdngccpl"

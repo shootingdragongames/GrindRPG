@@ -73,5 +73,5 @@ func get_mdef() -> int:
 func get_crit_chance() -> float:
     return (get_dex() + get_lck()) * 0.5
 
-func get_spd() -> int:
-    return int(get_dex() * 1.5)
+func get_initiative() -> float:
+    return (get_dex() + get_lck()) / 2.0

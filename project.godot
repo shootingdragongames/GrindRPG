@@ -19,6 +19,7 @@ config/icon="res://icon.svg"
 
 CharacterDB="*uid://da6pfjumqhw8x"
 GameState="*uid://d2ijvm5cnafcx"
+EnemyDB="*uid://dp0h223f7htq6"
 
 [physics]
 
